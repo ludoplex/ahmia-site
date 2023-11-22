@@ -22,14 +22,12 @@ class Command(BaseCommand):
 
     def _fetch_all_docs(self):
         """Returns a generator to iterate all records"""
-        doc_gen = scan(
+        return scan(
             self.es_obj,
             query={"query": {"match_all": {}}},
             index=self.es_index,
-            scroll='30m'
+            scroll='30m',
         )
-
-        return doc_gen
 
     def handle(self, *args, **options):
         entries = self._fetch_all_docs()

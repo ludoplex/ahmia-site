@@ -21,4 +21,4 @@ def add_query_params(request, **kwargs):
     for k, v in kwargs.items():
         updated[k] = v
 
-    return request.build_absolute_uri('?' + updated.urlencode())
+    return request.build_absolute_uri(f'?{updated.urlencode()}')

@@ -230,9 +230,9 @@ class Stats(models.Model):
 
 class TorStats(Stats):
     def __str__(self):
-        return str("Tor stats: %s" % self.day)
+        return str(f"Tor stats: {self.day}")
 
 
 class I2PStats(Stats):
     def __str__(self):
-        return str("I2P stats: %s" % self.day)
+        return str(f"I2P stats: {self.day}")

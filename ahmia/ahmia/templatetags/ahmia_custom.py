@@ -14,7 +14,4 @@ def is_development_environment():
 @register.simple_tag
 def get_environment():
     """Return environment mode"""
-    if settings.DEBUG:
-        return 'development'
-    else:
-        return 'production'
+    return 'development' if settings.DEBUG else 'production'

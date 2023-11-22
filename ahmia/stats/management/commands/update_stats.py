@@ -52,21 +52,20 @@ class Command(BaseCommand):
         # settings.USAGE_STATS_DAYS
 
         past_day_queries = SearchQuery.objects.today().\
-            filter(network=network)
+                filter(network=network)
         past_day_clicks = SearchResultsClick.objects.today().\
-            filter(network=network)
+                filter(network=network)
         num_queries = past_day_queries.aggregate(
             Sum('occurrences'))['occurrences__sum']
         num_clicks = past_day_clicks.aggregate(
             Sum('occurrences'))['occurrences__sum']
 
-        kwargs = {
+        return {
             'num_queries': num_queries or 0,
             'num_clicks': num_clicks or 0,
             'num_unique_queries': len(past_day_queries) or 0,
-            'num_unique_clicks': len(past_day_clicks) or 0
+            'num_unique_clicks': len(past_day_clicks) or 0,
         }
-        return kwargs
 
     def update_stats(self, modelclass, **kwargs):
         """

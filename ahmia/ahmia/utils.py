@@ -8,10 +8,10 @@ from elasticsearch import Elasticsearch
 def get_elasticsearch_object():
     """ Creating an elasticsearch object to query the index """
 
-    es_obj = Elasticsearch(
+    return Elasticsearch(
         hosts=settings.ELASTICSEARCH_SERVERS,
-        timeout=settings.ELASTICSEARCH_TIMEOUT)
-    return es_obj
+        timeout=settings.ELASTICSEARCH_TIMEOUT,
+    )
 
 
 def get_elasticsearch_both_index():
@@ -52,9 +52,7 @@ def extract_domain_from_url(url):
 
     no_path_no_tld = url.split('.onion')[0]
     domain_name = no_path_no_tld.split('.')[-1].split('/')[-1]
-    domain = domain_name + '.onion'
-
-    return domain
+    return f'{domain_name}.onion'
 
 
 def normalize_on_max(scalars):

@@ -67,16 +67,14 @@ def remove_non_ascii(text):
 
 def xss_safe(redirect_url):
     """ Validate that redirect URL is cross-site scripting safe """
-    if redirect_url[0:4] != "http":
+    if redirect_url[:4] != "http":
         return False # URL does not start with http
     # Look javascript or data inside the URL
     if "javascript:" in redirect_url or "data:" in redirect_url:
         return False
     url = remove_non_ascii(redirect_url) # Remove special chars
     url = url.strip().replace(" ", "") # Remove empty spaces and newlines
-    if "javascript:" in url or "data:" in url:
-        return False
-    return True # XSS safe content
+    return "javascript:" not in url and "data:" not in url
 
 def redirect_page(message, red_time, url):
     """Build and return redirect page."""
@@ -96,8 +94,7 @@ def filter_hits_by_time(hits, pastdays):
 
     time_threshold = datetime.fromtimestamp(
         time.time()) - timedelta(days=pastdays)
-    ret = [hit for hit in hits if hit['updated_on'] >= time_threshold]
-    return ret
+    return [hit for hit in hits if hit['updated_on'] >= time_threshold]
 
 def filter_hits_by_terms(hits):
     """Child abuse filtering"""
@@ -138,25 +135,16 @@ def heuristic_score(ir_score, gp_score, lp_score, urlparams):
     lp_coeff = float(urlparams.get('lp', 0))
     gp_coeff = float(urlparams.get('gp', 0))
     ir_coeff = 1 - gp_coeff - lp_coeff
-    ret = gp_score * gp_coeff + lp_score * lp_coeff + ir_score * ir_coeff
-
-    # drag down the average score when the two scores diverge too much
-    # pp = gp_coeff * gp_score
-    # ir = ir_coeff * ir_score
-    # ret = pp * ir / (pp + ir)  # failed: too much of a penalty
-
-    return ret
+    return gp_score * gp_coeff + lp_score * lp_coeff + ir_score * ir_coeff
 
 
 def local_page_pop(hits):
     """Calculate page popularity only for the domains of our results (hits)"""
-    domains = set(h['domain'] for h in hits)
+    domains = {h['domain'] for h in hits}
 
     p = PagePopHandler(hits, domains)
     p.build_pagescores()
-    scores = p.get_scores_as_dict()
-
-    return scores
+    return p.get_scores_as_dict()
 
 
 class TorResultsView(ElasticsearchBaseListView):
@@ -174,7 +162,7 @@ class TorResultsView(ElasticsearchBaseListView):
         for f_term in settings.FILTER_TERMS_AND_SHOW_HELP:
             for term in search_term.split(" "):
                 term_ascii = ''.join(c for c in term if c.isdigit() or c.isalpha())
-                if f_term.lower() == term.lower() or f_term.lower() == term_ascii.lower():
+                if f_term.lower() in [term.lower(), term_ascii.lower()]:
                     return True # Filtered
         return False # Not filtered
 
