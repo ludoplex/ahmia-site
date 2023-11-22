@@ -13,24 +13,21 @@ def extract_domain(url):
     ''' Returns the main domain from the URL address '''
     try:
         domain = urlparse(url).netloc
-        main_domain = '.'.join(domain.split('.')[-2:])
-        return main_domain
+        return '.'.join(domain.split('.')[-2:])
     except:
         return None
 
 def allowed_url(redirect_url):
     """ Validate the URL as allowed redirect URL """
-    allowed_domain_list = ['webropolsurveys.com', 'pelastakaalapset.fi', 'mielenterveystalo.fi', 'iterapi.se']
-    main_domain = extract_domain(redirect_url)
-    if not main_domain:
+    if not (main_domain := extract_domain(redirect_url)):
         return False
+    allowed_domain_list = ['webropolsurveys.com', 'pelastakaalapset.fi', 'mielenterveystalo.fi', 'iterapi.se']
     # Specially allowed domains
-    if main_domain in allowed_domain_list:
-        return True
-    # *.onion and *.i2p addresses
-    if main_domain.split('.')[-1] == 'i2p' or main_domain.split('.')[-1] == 'onion':
-        return True
-    return False # Not allowed
+    return (
+        True
+        if main_domain in allowed_domain_list
+        else main_domain.split('.')[-1] in ['i2p', 'onion']
+    )
 
 def validate_status(value):
     """Test if an onion domain is not banned."""
@@ -72,16 +69,12 @@ def validate_full_onion_url(url):
         # check for trailing slash if there is a path
         path = url.split('.onion')[-1]
         if path and path[0] != '/':
-            raise ValidationError(
-                _("{} url path should start with '/'".format(url))
-            )
+            raise ValidationError(_(f"{url} url path should start with '/'"))
 
         # check the rest of the url, left from .onion
         regex = "https?:\/\/([a-z0-9\-]+[.])*[a-z2-7]{16}([a-z2-7]{40})?[.]onion"
         if not re.match(regex, url.strip()):
-            raise ValidationError(
-                _("{} url is not a valid onion url".format(url))
-            )
+            raise ValidationError(_(f"{url} url is not a valid onion url"))
     except ValueError:
         # ValueError is parent to UnicodeError
         raise ValidationError(
@@ -102,7 +95,7 @@ def validate_onion_url(url):
 
     url = url.strip().rstrip('/')
 
-    if url[0:7] != 'http://' and url[0:8] != 'https://':
+    if url[:7] != 'http://' and url[:8] != 'https://':
         raise ValidationError(
             _(u'%(url)s is not beginning with http://') % {'url': url}
         )
@@ -125,7 +118,7 @@ def validate_onion(onion):
         raise ValidationError(_('The provided value is not a valid onion'))
 
     if not re.match(r"^[a-z2-7]{16}([a-z2-7]{40})?(\.onion)?$", onion.strip()):
-        raise ValidationError(_("%s url is not a valid onion url" % onion))
+        raise ValidationError(_(f"{onion} url is not a valid onion url"))
 
 
 def is_valid_onion_url(url):

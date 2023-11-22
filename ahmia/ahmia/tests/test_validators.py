@@ -20,7 +20,7 @@ class UrlValidatorsTestCase(TestCase):
             try:
                 validator(vu)
             except ValidationError:
-                self.fail("%s was mistakenly found invalid" % vu)
+                self.fail(f"{vu} was mistakenly found invalid")
 
         for invu in invalid_urls:
             with self.assertRaises(ValidationError):

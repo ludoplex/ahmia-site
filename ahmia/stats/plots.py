@@ -11,12 +11,7 @@ def _select_xticks(x):
     order to avoid obfuscating each other, due to figure's fixed width.
     """
 
-    if len(x) < 19:
-        # print all
-        return x
-    else:
-        # print every two
-        return x[0:-1:2]
+    return x if len(x) < 19 else x[:-1:2]
 
 
 def generate_figure(x, y1, y2, image_path, metric_str):
@@ -35,7 +30,7 @@ def generate_figure(x, y1, y2, image_path, metric_str):
     fig.set_size_inches(11.4, 5.5)
     x_labels = x  # _select_xticks(x)
 
-    axis[0].set_title("Unique %s" % metric_str)
+    axis[0].set_title(f"Unique {metric_str}")
     axis[0].bar(x, y2, edgecolor="k")  # fill in data
     axis[0].yaxis.set_major_locator(MaxNLocator(integer=True))  # int ylabels
     axis[0].grid(clip_on=True, marker='o', axis='y')  # draw grid lines

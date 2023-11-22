@@ -150,7 +150,7 @@ MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
 # Log everything to the logs directory at the top
 LOGFILE_ROOT = ROOT_PATH('logs')
 if not os.path.exists(LOGFILE_ROOT):
-    print("Creating logs empty folder %s" % LOGFILE_ROOT)
+    print(f"Creating logs empty folder {LOGFILE_ROOT}")
     os.mkdir(LOGFILE_ROOT)
 
 # Disable automatic default configuration process to apply our own settings

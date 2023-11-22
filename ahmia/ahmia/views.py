@@ -217,8 +217,7 @@ class OnionListView(ElasticsearchBaseListView):
             for hit in hits['aggregations']['domains']['buckets']
         ]
 
-        hits = sorted(hits, key=itemgetter('domain'))
-        return hits
+        return sorted(hits, key=itemgetter('domain'))
 
     def get_context_data(self, **kwargs):
         return {
@@ -272,12 +271,12 @@ class BannedDomainListView(OnionListView):
             with open(cache_file, 'rt') as filehandle:
                 lines = filehandle.readlines()
         except IOError:
-            print("Cache file %s is not created yet." % cache_file)
+            print(f"Cache file {cache_file} is not created yet.")
         added = False
         for hit in hits:
             domain = hit['domain']
             new_line = "%s\n" % domain
-            if not new_line in lines:
+            if new_line not in lines:
                 lines.append(new_line)
                 added = True
         if added:

@@ -52,7 +52,7 @@ def query(graph, es, color):
                     # graph.add_node(domain)
                     # graph.node[domain]['viz'] = {'color': color}
                     graph.add_edge(item["domain"], domain)
-        start = start + limit
+        start += limit
 
 
 def use_data(es):

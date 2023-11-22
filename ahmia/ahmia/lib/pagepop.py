@@ -20,9 +20,7 @@ def is_legit_link(link, entry):
     TODO: Dead links (performance issue ~ resolve via the crawler?)
     """
     # ignore any links without text ~ but some entries dont have link_name so:
-    if 'link_name' in link and not link['link_name']:
-        return False
-    return True
+    return bool('link_name' not in link or link['link_name'])
 
 
 class PagePopHandler(object):
@@ -65,11 +63,10 @@ class PagePopHandler(object):
 
         :rtype dict
         """
-        objs = {}
-        for onion, index in self.domains_idxs.items():
-            objs[onion] = float(self.scores[index])
-
-        return objs
+        return {
+            onion: float(self.scores[index])
+            for onion, index in self.domains_idxs.items()
+        }
 
     def get_scores(self):
         """
@@ -95,13 +92,11 @@ class PagePopHandler(object):
 
         :rtype: ``dict``
         """
-        ret = {
+        return {
             'num_nodes': self.num_domains,
             'num_links': self.num_links,
-            'num_edges': self.num_edges
+            'num_edges': self.num_edges,
         }
-
-        return ret
 
     def save(self):
         """
@@ -166,7 +161,7 @@ class PagePopHandler(object):
                 # entry from anchor text
                 origin = e['source']
             else:
-                logger.warning('rank_pages: Unable to process: %s' % e)
+                logger.warning(f'rank_pages: Unable to process: {e}')
                 continue
 
             origin = utils.extract_domain_from_url(origin)
